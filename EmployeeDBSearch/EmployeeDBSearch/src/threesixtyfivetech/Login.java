@@ -1,10 +1,12 @@
 package threesixtyfivetech;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,7 +30,8 @@ public class Login extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField txtUname;
-	private JTextField txtUpass;
+	private JTextField txtLoginMsg;
+	private JPasswordField txtUpass;
 
 	/**
 	 * Launch the application.
@@ -50,6 +53,7 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
+		setTitle("Employee Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -73,48 +77,54 @@ public class Login extends JFrame {
 		contentPane.add(txtUname);
 		txtUname.setColumns(10);
 		
-		txtUpass = new JTextField();
-		txtUpass.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtUpass.setBounds(185, 145, 110, 20);
-		contentPane.add(txtUpass);
-		txtUpass.setColumns(10);
-		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new ActionListener() {
+			@SuppressWarnings("unused")
 			public void actionPerformed(ActionEvent e) {
 				String dbUsername, dbUserpass;
+				String url = "jdbc:mysql://127.0.0.1:3306/employee_schema";
+				String user = "root";
+				String pass = "AAAbbb444$";
 				boolean login = false;
 				
 				try {
 					//Get users input
 					String uname = txtUname.getText();
-					String upass = txtUpass.getText();
+					char[] upass = txtUpass.getPassword();
 					
 					//Database connection
 					Class.forName("com.mysql.jdbc.Driver").newInstance();
-					String url = "jdbc:mysql://127.0.0.1:3306/employee_schema";
-					String user = "root";
-					String pass = "AAAbbb444$";
-					//"jdbc:mysql://127.0.0.1:3306/employee_schema", "root", "AAAbbb444$"
+					
+					
 					Connection con = DriverManager.getConnection(url, user, pass);
 					
 					//SQL Query
 					PreparedStatement st = con.prepareStatement("select * from employee_schema.emp_login where username=? and pass=?");
 					st.setString(1, uname);
-					st.setString(2, upass);
+					st.setString(2, String.valueOf(txtUpass.getPassword()));
 					
 					//Execute Query
 					ResultSet rs = st.executeQuery();
 					
-					while(rs.next()) {
-						dbUsername = rs.getString(1);
-						dbUserpass = rs.getString(2);
+					if (rs.next()) {
+						txtLoginMsg.setText("Login Successful!");
+						txtLoginMsg.setForeground(Color.GREEN);
 						
-						if(dbUsername.equals(uname) && dbUserpass.equals(upass)) {
-							//System.out.println("Login in Successful!");
-							JOptionPane.showMessageDialog(null, "Login in Successful!");
-							login = true;
-						}
+						//Close jdbc connection
+						con.close();
+						System.out.println("Connection close");
+						
+						//Close Login screen
+						dispose();
+						
+						//Open Employee Search
+						EmployeeSearch empSearch = new EmployeeSearch();
+						empSearch.setVisible(true);
+					} else {
+						txtLoginMsg.setText("Invalid user name or password");
+						txtLoginMsg.setForeground(Color.RED);
+						txtUname.setText(null);
+						txtUpass.setText(null);
 					}
 					} catch(InstantiationException e1) {
 						System.out.println(e1);
@@ -147,6 +157,17 @@ public class Login extends JFrame {
 		lblEmployeeLogin.setFont(new Font("Tahoma", Font.BOLD, 20));
 		lblEmployeeLogin.setBounds(115, 30, 170, 45);
 		contentPane.add(lblEmployeeLogin);
+		
+		txtLoginMsg = new JTextField();
+		txtLoginMsg.setEditable(false);
+		txtLoginMsg.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtLoginMsg.setBounds(100, 70, 200, 25);
+		contentPane.add(txtLoginMsg);
+		txtLoginMsg.setColumns(10);
+		
+		txtUpass = new JPasswordField();
+		txtUpass.setBounds(185, 145, 110, 20);
+		contentPane.add(txtUpass);
 		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{txtUname, txtUpass}));
 	}
 }

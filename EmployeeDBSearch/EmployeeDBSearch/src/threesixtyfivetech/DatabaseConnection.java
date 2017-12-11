@@ -21,10 +21,15 @@ public class DatabaseConnection {
 			rs = stm.executeQuery();
 			
 			while(rs.next()) {
-				String 
+				String userName = rs.getString(1);
+				String password = rs.getString(2);
+				
+				System.out.println("Username: "+ userName + "\n" + "Passwprd: " + password);
 			}
+			conn.close();
 		} catch (Exception e) {
 			// TODO: handle exception
+			System.out.println(e.getMessage());
 		}
 	}
 }
