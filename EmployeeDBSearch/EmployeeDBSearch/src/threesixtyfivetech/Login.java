@@ -92,7 +92,7 @@ public class Login extends JFrame {
 					//SQL Query
 					String query = "select * from employee_schema.emp_login where username=? and pass=?";
 					stmt = con.prepareStatement(query);
-					//PreparedStatement st = .prepareStatement("select * from employee_schema.emp_login where username=? and pass=?");
+					
 					stmt.setString(1, uname);
 					stmt.setString(2, String.valueOf(txtUpass.getPassword()));
 					

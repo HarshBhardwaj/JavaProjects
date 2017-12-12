@@ -163,50 +163,34 @@ public class EmployeeSearch extends JFrame {
 					//Get users input
 					String uinput = txtNameSearch.getText();
 					
+					//Database connection
+					con = ConnectionManager.getConnection();
+					
 					//Split the input text: first name and last name
 					String[] parts = uinput.split(" ");
 					if (parts.length > 1) {
 						fName = parts[0];
 						lName = parts[1];
-					} else {
 						
-					}
-															
-					//Database connection
-					con = ConnectionManager.getConnection();
-					
-					//SQL Query
-					if (fName != null && !lName.isEmpty()) {
 						String query = "select * from employee_schema.emp where ufname=? and ulname=?";
 						stmt = con.prepareStatement(query);					
 												
 						stmt.setString(1, fName);
 						stmt.setString(2, lName);
+										
+					} else {
+						fName = parts[0];
 						
-						System.out.println(stmt);
-					} else if (fName.isEmpty()) {
 						String query1 = "select * from employee_schema.emp where ufname=?";
 						stmt = con.prepareStatement(query1);					
-												
+						
 						stmt.setString(1, fName);
-						System.out.println(stmt);
-					} else if (lName.isEmpty()) {
-						String query = "select * from employee_schema.emp where lfname=?";
-						stmt = con.prepareStatement(query);					
-												
-						stmt.setString(2, lName);
-						System.out.println(stmt);
-					} 
-					else {
-						System.out.println("Please enter valid name");
-					}
 					
-					System.out.println(stmt);
+					}
 					
 					//Executing Query
 					ResultSet rs1 = stmt.executeQuery();
-					System.out.println(rs1);
-					
+										
 					if (rs1.next()) {
 						String resout = rs1.getString(1);
 						String resout1 = rs1.getString(2);

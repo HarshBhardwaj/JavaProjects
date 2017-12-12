@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-//import com.mysql.jdbc.Driver;
-
 public class ConnectionManager{
 	private static String driverName = "com.mysql.jdbc.Driver";
 	private static String url = "jdbc:mysql://127.0.0.1:3306/employee_schema";
