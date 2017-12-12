@@ -1,6 +1,5 @@
 package threesixtyfivetech;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 
@@ -9,16 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.Font;
-import java.awt.Frame;
-
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +20,7 @@ import java.awt.event.ActionEvent;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import java.awt.Component;
 
+@SuppressWarnings("serial")
 public class Login extends JFrame {
 
 	private JPanel contentPane;
@@ -81,10 +76,9 @@ public class Login extends JFrame {
 		btnLogin.addActionListener(new ActionListener() {
 			@SuppressWarnings("unused")
 			public void actionPerformed(ActionEvent e) {
-				String dbUsername, dbUserpass;
-				String url = "jdbc:mysql://127.0.0.1:3306/employee_schema";
-				String user = "root";
-				String pass = "AAAbbb444$";
+				Connection con = null;
+				PreparedStatement stmt = null;
+				ResultSet rs = null;
 				boolean login = false;
 				
 				try {
@@ -93,26 +87,21 @@ public class Login extends JFrame {
 					char[] upass = txtUpass.getPassword();
 					
 					//Database connection
-					Class.forName("com.mysql.jdbc.Driver").newInstance();
-					
-					
-					Connection con = DriverManager.getConnection(url, user, pass);
+					con = ConnectionManager.getConnection();
 					
 					//SQL Query
-					PreparedStatement st = con.prepareStatement("select * from employee_schema.emp_login where username=? and pass=?");
-					st.setString(1, uname);
-					st.setString(2, String.valueOf(txtUpass.getPassword()));
+					String query = "select * from employee_schema.emp_login where username=? and pass=?";
+					stmt = con.prepareStatement(query);
+					//PreparedStatement st = .prepareStatement("select * from employee_schema.emp_login where username=? and pass=?");
+					stmt.setString(1, uname);
+					stmt.setString(2, String.valueOf(txtUpass.getPassword()));
 					
 					//Execute Query
-					ResultSet rs = st.executeQuery();
+					ResultSet rs1 = stmt.executeQuery();
 					
-					if (rs.next()) {
+					if (rs1.next()) {
 						txtLoginMsg.setText("Login Successful!");
 						txtLoginMsg.setForeground(Color.GREEN);
-						
-						//Close jdbc connection
-						con.close();
-						System.out.println("Connection close");
 						
 						//Close Login screen
 						dispose();
@@ -126,12 +115,6 @@ public class Login extends JFrame {
 						txtUname.setText(null);
 						txtUpass.setText(null);
 					}
-					} catch(InstantiationException e1) {
-						System.out.println(e1);
-					} catch (IllegalAccessException e2) {
-						System.out.println(e2);
-					} catch (ClassNotFoundException e3) {
-						System.out.println(e3);
 					} catch (SQLException e4) {
 						System.out.println(e4);
 					}

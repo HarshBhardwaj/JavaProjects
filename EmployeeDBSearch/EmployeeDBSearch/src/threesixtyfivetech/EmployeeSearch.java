@@ -5,7 +5,6 @@
 
 package threesixtyfivetech;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -19,7 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
@@ -152,41 +150,70 @@ public class EmployeeSearch extends JFrame {
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Connection con = null;
+				PreparedStatement stmt = null;
+				@SuppressWarnings("unused")
+				ResultSet rs = null;
+				
 				//create DataBase Connection and fetch records
 				
 				try {
+					
+					String fName = null, lName = null;
 					//Get users input
 					String uinput = txtNameSearch.getText();
 					
 					//Split the input text: first name and last name
 					String[] parts = uinput.split(" ");
-					String fName = parts[0];
-					String lName = parts[1];
-					
+					if (parts.length > 1) {
+						fName = parts[0];
+						lName = parts[1];
+					} else {
+						
+					}
+															
 					//Database connection
-					Class.forName("com.mysql.jdbc.Driver").newInstance();
-					String url = "jdbc:mysql://127.0.0.1:3306/employee_schema";
-					String user = "root";
-					String pass = "AAAbbb444$";
-					//"jdbc:mysql://127.0.0.1:3306/employee_schema", "root", "AAAbbb444$"
-					Connection con = DriverManager.getConnection(url, user, pass);
-					System.out.println(con);
-					//SQL query
-					PreparedStatement st = con.prepareStatement("select * from employee_schema.emp where ufname=? and ulname=?");
-					System.out.println(st);
-					st.setString(1, fName);
-					st.setString(2, lName);
-					System.out.println(st);
+					con = ConnectionManager.getConnection();
+					
+					//SQL Query
+					if (fName != null && !lName.isEmpty()) {
+						String query = "select * from employee_schema.emp where ufname=? and ulname=?";
+						stmt = con.prepareStatement(query);					
+												
+						stmt.setString(1, fName);
+						stmt.setString(2, lName);
+						
+						System.out.println(stmt);
+					} else if (fName.isEmpty()) {
+						String query1 = "select * from employee_schema.emp where ufname=?";
+						stmt = con.prepareStatement(query1);					
+												
+						stmt.setString(1, fName);
+						System.out.println(stmt);
+					} else if (lName.isEmpty()) {
+						String query = "select * from employee_schema.emp where lfname=?";
+						stmt = con.prepareStatement(query);					
+												
+						stmt.setString(2, lName);
+						System.out.println(stmt);
+					} 
+					else {
+						System.out.println("Please enter valid name");
+					}
+					
+					System.out.println(stmt);
+					
 					//Executing Query
-					ResultSet rs = st.executeQuery();
-					System.out.println(rs);
-					if (rs.next()) {
-						String resout = rs.getString(1);
-						String resout1 = rs.getString(2);
-						String resout2 = rs.getString(3);
-						String resout3 = rs.getString(4);
-						String resout4 = rs.getString(5);
-						String resout5 = rs.getString(6);
+					ResultSet rs1 = stmt.executeQuery();
+					System.out.println(rs1);
+					
+					if (rs1.next()) {
+						String resout = rs1.getString(1);
+						String resout1 = rs1.getString(2);
+						String resout2 = rs1.getString(3);
+						String resout3 = rs1.getString(4);
+						String resout4 = rs1.getString(5);
+						String resout5 = rs1.getString(6);
 						
 						//Set results in test fields
 						txtFName.setText(resout);
