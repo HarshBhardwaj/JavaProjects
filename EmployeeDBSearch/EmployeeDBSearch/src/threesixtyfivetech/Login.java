@@ -87,7 +87,7 @@ public class Login extends JFrame {
 					char[] upass = txtUpass.getPassword();
 					
 					//Database connection
-					con = ConnectionManager.getConnection();
+					con = ConnectionManager.getInstance().getConnection();
 					
 					//SQL Query
 					String query = "select * from employee_schema.emp_login where username=? and pass=?";

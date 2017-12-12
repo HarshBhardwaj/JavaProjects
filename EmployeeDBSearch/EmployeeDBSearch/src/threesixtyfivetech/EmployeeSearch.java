@@ -164,7 +164,7 @@ public class EmployeeSearch extends JFrame {
 					String uinput = txtNameSearch.getText();
 					
 					//Database connection
-					con = ConnectionManager.getConnection();
+					con = ConnectionManager.getInstance().getConnection();
 					
 					//Split the input text: first name and last name
 					String[] parts = uinput.split(" ");
@@ -206,12 +206,16 @@ public class EmployeeSearch extends JFrame {
 						txtEmail.setText(resout3);
 						txtPass.setText(resout4);
 						txtLocation.setText(resout5);
+						
 					} else {
 						JOptionPane.showMessageDialog(null, "Employee not found!");
 					}
 					//Exception Handler
 				} catch (Exception ex) {
 					System.out.println(ex);
+					con = ConnectionManager.getInstance().getConnection();
+					ConnectionManager.closeConn(con);
+					System.out.println(con);
 				}
 			}
 		});
@@ -239,6 +243,8 @@ public class EmployeeSearch extends JFrame {
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
+				
+				
 			}
 		});
 		btnNewButton_1.setFont(new Font("Tahoma", Font.BOLD, 14));
